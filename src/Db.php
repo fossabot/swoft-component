@@ -16,6 +16,7 @@ use Swoft\Db\Exception\DbException;
 use Swoft\Db\Helper\DbHelper;
 use Swoft\Db\Helper\EntityHelper;
 use Swoft\Helper\PoolHelper;
+use Swoft\Log\Log;
 use Swoft\Pool\ConnectionInterface;
 use Swoft\Db\Pool\Config\DbPoolProperties;
 use Swoft\Db\Pool\DbPool;
@@ -74,11 +75,17 @@ class Db
         $pool = $connection->getPool();
         /* @var DbPoolProperties $poolConfig */
         $poolConfig = $pool->getPoolConfig();
-        $profileKey = $poolConfig->getDriver();
+        $driver = $poolConfig->getDriver();
 
         if (App::isCoContext()) {
             $connection->setDefer();
         }
+
+        $sqlId = uniqid();
+        $profileKey = sprintf('%s.%s', $driver, $sqlId);
+        Log::debug(sprintf('Execute sqlId=%s , sql=%s', $sqlId, $sql));
+
+        Log::profileStart($profileKey);
         $connection->prepare($sql);
         $params = self::transferParams($params);
         $result = $connection->execute($params);
@@ -174,10 +181,6 @@ class Db
 
         if (strpos($sql, 'UPDATE') === 0 || strpos($sql, 'DELETE') === 0) {
             return self::RETURN_ROWS;
-        }
-
-        if (strpos($sql, 'SELECT') === 0 && strpos($sql, 'LIMIT 0,1')) {
-            return self::RETURN_ONE;
         }
 
         return self::RETURN_FETCH;

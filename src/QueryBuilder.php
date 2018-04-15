@@ -7,6 +7,7 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace Swoft\Db;
 
 use Swoft\App;
@@ -355,6 +356,19 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * @param array $columns
+     *
+     * @return ResultInterface
+     */
+    public function one(array $columns = ['*'])
+    {
+        $this->limit(1);
+        $this->addOneDecorator();
+
+        return $this->get($columns);
+    }
+
+    /**
      * @param string $table
      * @param string $alias
      *
@@ -464,7 +478,7 @@ class QueryBuilder implements QueryBuilderInterface
      * - ['name', 'not like', '%swoft%']
      *
      *
-     * @param array  $condition
+     * @param array $condition
      *
      * @return \Swoft\Db\QueryBuilder
      */
@@ -908,11 +922,13 @@ class QueryBuilder implements QueryBuilderInterface
 
     /**
      * @param \Closure $closure
+     *
      * @return $this
      */
     public function addDecorator(\Closure $closure): self
     {
         $this->decorators[] = $closure;
+
         return $this;
     }
 
@@ -922,16 +938,19 @@ class QueryBuilder implements QueryBuilderInterface
     public function clearDecorators(): self
     {
         $this->decorators = [];
+
         return $this;
     }
 
     /**
      * @param array $decorators
+     *
      * @return $this
      */
     public function setDecorators(array $decorators): self
     {
         $this->decorators = $decorators;
+
         return $this;
     }
 
@@ -1089,10 +1108,11 @@ class QueryBuilder implements QueryBuilderInterface
     public function count(string $column = '*', string $alias = 'count'): ResultInterface
     {
         $this->aggregate['count'] = [$column, $alias];
-        $this->limit(1);
+        $this->addAggregateDecorator($alias);
 
         return $this->execute();
     }
+
 
     /**
      * @param string $column
@@ -1103,7 +1123,7 @@ class QueryBuilder implements QueryBuilderInterface
     public function max(string $column, string $alias = 'max'): ResultInterface
     {
         $this->aggregate['max'] = [$column, $alias];
-        $this->limit(1);
+        $this->addAggregateDecorator($alias);
 
         return $this->execute();
     }
@@ -1117,7 +1137,7 @@ class QueryBuilder implements QueryBuilderInterface
     public function min(string $column, string $alias = 'min'): ResultInterface
     {
         $this->aggregate['min'] = [$column, $alias];
-        $this->limit(1);
+        $this->addAggregateDecorator($alias);
 
         return $this->execute();
     }
@@ -1131,7 +1151,7 @@ class QueryBuilder implements QueryBuilderInterface
     public function avg(string $column, string $alias = 'avg'): ResultInterface
     {
         $this->aggregate['avg'] = [$column, $alias];
-        $this->limit(1);
+        $this->addAggregateDecorator($alias);
 
         return $this->execute();
     }
@@ -1145,7 +1165,7 @@ class QueryBuilder implements QueryBuilderInterface
     public function sum(string $column, string $alias = 'sum'): ResultInterface
     {
         $this->aggregate['sum'] = [$column, $alias];
-        $this->limit(1);
+        $this->addAggregateDecorator($alias);
 
         return $this->execute();
     }
@@ -1339,5 +1359,30 @@ class QueryBuilder implements QueryBuilderInterface
     public function getUpdateValues(): array
     {
         return $this->updateValues;
+    }
+
+    /**
+     * @param string $alias
+     */
+    protected function addAggregateDecorator(string $alias)
+    {
+        $this->addDecorator(function ($result) use ($alias) {
+            if (isset($result[0][$alias])) {
+                return $result[0][$alias];
+            }
+
+            return 0;
+        });
+    }
+
+    protected function addOneDecorator()
+    {
+        $this->addDecorator(function ($result) {
+            if (isset($result[0])) {
+                return $result[0];
+            }
+
+            return [];
+        });
     }
 }

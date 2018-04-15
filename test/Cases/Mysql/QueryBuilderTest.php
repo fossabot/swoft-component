@@ -7,9 +7,11 @@
  * @contact  group@swoft.org
  * @license  https://github.com/swoft-cloud/swoft/blob/master/LICENSE
  */
+
 namespace SwoftTest\Db\Cases\Mysql;
 
 use Swoft\Db\Query;
+use Swoft\Db\QueryBuilder;
 use SwoftTest\Db\Cases\AbstractMysqlCase;
 use SwoftTest\Db\Testing\Entity\OtherUser;
 use SwoftTest\Db\Testing\Entity\User;
@@ -26,7 +28,7 @@ class QueryBuilderTest extends AbstractMysqlCase
      */
     public function testDbSelect(int $id)
     {
-        $result = Query::table(User::class)->where('id', $id)->limit(1)->get()->getResult();
+        $result = Query::table(User::class)->where('id', $id)->one()->getResult();
         $this->assertEquals($id, $result['id']);
     }
 
@@ -120,7 +122,7 @@ class QueryBuilderTest extends AbstractMysqlCase
         $userid = Query::table(User::class)->selectDb('test2')->insert($data)->getResult();
 
         $user  = User::findById($userid)->getResult();
-        $user2 = Query::table(User::class)->selectDb('test2')->where('id', $userid)->limit(1)->get()->getResult();
+        $user2 = Query::table(User::class)->selectDb('test2')->where('id', $userid)->one()->getResult();
 
         $this->assertEquals($user2['description'], 'this my desc table');
         $this->assertEquals($user2['id'], $userid);
@@ -142,7 +144,7 @@ class QueryBuilderTest extends AbstractMysqlCase
             'age'         => mt_rand(1, 100),
         ];
         $result = Query::table('user2')->insert($data)->getResult();
-        $user2  = Query::table('user2')->where('id', $result)->limit(1)->get()->getResult();
+        $user2  = Query::table('user2')->where('id', $result)->one()->getResult();
         $this->assertEquals($user2['id'], $result);
     }
 
@@ -164,7 +166,7 @@ class QueryBuilderTest extends AbstractMysqlCase
         $userid = Query::table(User::class)->selectInstance('other')->insert($data)->getResult();
 
         $user  = OtherUser::findById($userid)->getResult();
-        $user2 = Query::table(User::class)->selectInstance('other')->where('id', $userid)->limit(1)->get()->getResult();
+        $user2 = Query::table(User::class)->selectInstance('other')->where('id', $userid)->one()->getResult();
         $this->assertEquals($user2['description'], 'this my desc instance');
         $this->assertEquals($user2['id'], $userid);
     }
@@ -186,12 +188,12 @@ class QueryBuilderTest extends AbstractMysqlCase
             'age'         => $age,
         ];
         $userid = Query::table(User::class)->insert($data)->getResult();
-        $user   = Query::table(User::class)->condition(['name' => 'nameQuery', 'age' => $age])->limit(1)->get()->getResult();
+        $user   = Query::table(User::class)->condition(['name' => 'nameQuery', 'age' => $age])->one()->getResult();
 
         $this->assertEquals('nameQuery', $user['name']);
         $this->assertEquals($age, $user['age']);
 
-        $user2 = Query::table(User::class)->where('id', $userid)->condition(['name' => 'nameQuery', 'age' => $age])->limit(1)->get()->getResult();
+        $user2 = Query::table(User::class)->where('id', $userid)->condition(['name' => 'nameQuery', 'age' => $age])->one()->getResult();
         $this->assertEquals('nameQuery', $user2['name']);
         $this->assertEquals($age, $user2['age']);
     }
@@ -237,7 +239,7 @@ class QueryBuilderTest extends AbstractMysqlCase
         ];
 
         $userid = Query::table(User::class)->insert($data)->getResult();
-        $user   = Query::table(User::class)->condition(['age', '<', $age])->andWhere('id', $userid)->limit(1)->orderBy('id', 'desc')->get()->getResult();
+        $user   = Query::table(User::class)->condition(['age', '<', $age])->andWhere('id', $userid)->orderBy('id', 'desc')->one()->getResult();
         $this->assertEquals($userid, $user['id']);
     }
 
@@ -252,14 +254,14 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         $age  = mt_rand(1, 100);
         $data = [
-            'name'        => 'nameQuery',
+            'name'        => 'testCondtion2AndByF3',
             'sex'         => 1,
             'description' => 'this my desc instance',
             'age'         => $age - 1,
         ];
 
         $userid = Query::table(User::class)->insert($data)->getResult();
-        $users  = Query::table(User::class)->condition(['age', 'between', $age-1, $age + 1])->orderBy('id', 'desc')->get()->getResult();
+        $users  = Query::table(User::class)->condition(['id', 'between', $userid - 1, $userid + 1])->orderBy('id', 'desc')->get()->getResult();
         $this->assertTrue(count($users) > 1);
     }
 
@@ -348,6 +350,30 @@ class QueryBuilderTest extends AbstractMysqlCase
     {
         go(function () use ($ids) {
             $this->testCondtion5AndByF3($ids);
+        });
+    }
+
+    /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $ids
+     */
+    public function testLimit(array $ids)
+    {
+        sort($ids);
+        $result = Query::table(User::class)->whereIn('id', $ids)->orderBy('id', 'asc')->limit(1, 1)->get()->getResult();
+        $this->assertEquals($ids[1], $result[0]['id']);
+    }
+
+    /**
+     * @dataProvider mysqlProviders
+     *
+     * @param array $ids
+     */
+    public function testLimitByCo(array $ids)
+    {
+        go(function ()use ($ids){
+            $this->testLimit($ids);
         });
     }
 }
