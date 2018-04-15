@@ -16,6 +16,8 @@ return [
         'SwoftTest\\Aop'         => SRC_PATH . '/framework/test/Cases/Aop',
         'SwoftTest\\Bean'        => SRC_PATH . '/framework/test/Cases/Bean',
         'SwoftTest\\Pool'        => SRC_PATH . '/framework/test/Cases/Pool',
+        'SwoftTest\\Task\\Tasks' => SRC_PATH . '/task/test/Cases/Tasks',
+        'Swoft\\Tasks'           => SRC_PATH . '/task/src',
     ],
     'env'          => 'Base',
     'db'           => require __DIR__ . DS . 'db.php',
