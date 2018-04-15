@@ -105,9 +105,9 @@ abstract class ConnectionPool implements PoolInterface
     public function getConnectionAddress():string
     {
         $serviceList  = $this->getServiceList();
-        if (App::hasBean('balancerSelector')) {
-            $balancerType = $this->poolConfig->getBalancer();
-            $balancer     = balancer()->select($balancerType);
+        $balancerType = $this->poolConfig->getBalancer();
+        if (App::hasBean('balancerSelector') && balancer()->hasBalancer($balancerType)) {
+            $balancer = balancer()->select($balancerType);
             return $balancer->select($serviceList);
         }
         return current($serviceList);
@@ -126,14 +126,14 @@ abstract class ConnectionPool implements PoolInterface
      */
     protected function getServiceList()
     {
-        $name = $this->poolConfig->getName();
-        if ($this->poolConfig->isUseProvider() && App::hasBean('providerSelector')) {
-            $type = $this->poolConfig->getProvider();
-
+        $config = $this->poolConfig;
+        $name = $config->getName();
+        $type = $config->getProvider();
+        if ($config->isUseProvider() && App::hasBean('providerSelector') && provider()->hasProvider($type)) {
             return provider()->select($type)->getServiceList($name);
         }
 
-        $uri = $this->poolConfig->getUri();
+        $uri = $config->getUri();
         if (empty($uri)) {
             $error = sprintf('Service does not configure uri name=%s', $name);
             App::error($error);

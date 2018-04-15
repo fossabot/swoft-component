@@ -56,6 +56,16 @@ class ProviderSelector implements SelectorInterface
     }
 
     /**
+     * @param string $provider
+     * @return bool
+     */
+    public function hasProvider(string $provider):bool
+    {
+        $providers = (array)$this->mergeProviders();
+        return isset($providers[$provider]);
+    }
+
+    /**
      * merge default and config packers
      *
      * @return array

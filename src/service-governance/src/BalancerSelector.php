@@ -52,6 +52,16 @@ class BalancerSelector implements SelectorInterface
     }
 
     /**
+     * @param string $balancer
+     * @return bool
+     */
+    public function hasBalancer(string $balancer): bool
+    {
+        $balancers = $this->mergeBalancers();
+        return isset($balancers[$balancer]);
+    }
+
+    /**
      * merge default and config packers
      *
      * @return array
