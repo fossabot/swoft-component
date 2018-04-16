@@ -16,8 +16,6 @@ return [
         'SwoftTest\\Aop'                     => SRC_PATH . '/framework/test/Cases/Aop',
         'SwoftTest\\Bean'                    => SRC_PATH . '/framework/test/Cases/Bean',
         'SwoftTest\\Pool'                    => SRC_PATH . '/framework/test/Cases/Pool',
-        'SwoftTest\\Task\\Tasks'             => SRC_PATH . '/task/test/Cases/Tasks',
-        'Swoft\\Tasks'                       => SRC_PATH . '/task/src',
         'Swoft\\Http\\Server\\Test\\Testing' => SRC_PATH . '/http-server/test/Testing',
         'Swoft\\I18n'                        => SRC_PATH . '/i18n/src',
         'SwoftTest\\Redis\\Pool'             => SRC_PATH . '/redis/test/Cases/Pool',
