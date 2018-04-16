@@ -5,7 +5,7 @@ if (file_exists($file = dirname(__DIR__, 3) . '/autoload.php')) {
 } elseif (file_exists($file = dirname(__DIR__) . '/vendor/autoload.php')) {
     require $file;
 } else {
-    exit('OO, The composer autoload file is not found!');
+    exit('Oops, The composer autoload file is not found!');
 }
 
 require 'config/define.php';
