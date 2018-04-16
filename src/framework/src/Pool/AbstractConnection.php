@@ -42,7 +42,7 @@ abstract class AbstractConnection implements ConnectionInterface
     public function __construct(PoolInterface $connectPool)
     {
         $this->lastTime     = time();
-        $this->connectionId = uniqid();
+        $this->connectionId = \uniqid('', true);
         $this->pool         = $connectPool;
         $this->createConnection();
     }
@@ -72,9 +72,9 @@ abstract class AbstractConnection implements ConnectionInterface
     }
 
     /**
-     * @return \Swoft\Pool\PoolInterface
+     * @return PoolInterface
      */
-    public function getPool(): \Swoft\Pool\PoolInterface
+    public function getPool(): PoolInterface
     {
         return $this->pool;
     }
@@ -116,7 +116,7 @@ abstract class AbstractConnection implements ConnectionInterface
      */
     public function release($release = false)
     {
-        if ($this->isAutoRelease() || $release) {
+        if ($release || $this->isAutoRelease()) {
             $this->pool->release($this);
         }
     }
