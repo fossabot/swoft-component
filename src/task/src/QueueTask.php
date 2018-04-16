@@ -75,10 +75,10 @@ class QueueTask
     {
         $setting = App::$appProperties['server']['setting'];
 
-        $this->tmp        = $setting['task_tmpdir'];
-        $this->workerNum  = $setting['worker_num'];
-        $this->taskNum    = $setting['task_worker_num'];
-        $this->messageKey = $setting['message_queue_key'];
+        $this->tmp        = $setting['task_tmpdir'] ?? '/tmp';
+        $this->workerNum  = $setting['worker_num'] ?? 1;
+        $this->taskNum    = $setting['task_worker_num'] ?? 1;
+        $this->messageKey = $setting['message_queue_key'] ?? 0x70001001;
     }
 
     /**
@@ -88,7 +88,7 @@ class QueueTask
      *
      * @return bool
      */
-    public function deliver(string $data, int $taskWorkerId = null, $srcWorkerId = null)
+    public function deliver(string $data, int $taskWorkerId = null, $srcWorkerId = null): bool
     {
         if ($taskWorkerId === null) {
             $taskWorkerId = mt_rand($this->workerNum + 1, $this->workerNum + $this->taskNum);
@@ -113,7 +113,7 @@ class QueueTask
      */
     private function check()
     {
-        if (!function_exists('msg_get_queue')) {
+        if (! \function_exists('msg_get_queue')) {
             throw new TaskException('You must to compiled php with --enable-sysvmsg');
         }
         if ($this->queueId === null) {
@@ -135,18 +135,18 @@ class QueueTask
     {
         $flags = self::SW_TASK_NONBLOCK;
         $type  = self::SW_EVENT_TASK;
-        if (!is_string($data)) {
+        if (! \is_string($data)) {
             $data  = serialize($data);
             $flags |= self::SW_TASK_SERIALIZE;
         }
-        if (strlen($data) >= 8180) {
+        if (\strlen($data) >= 8180) {
             $tmpFile = tempnam($this->tmp, $this->tmpFile);
             file_put_contents($tmpFile, $data);
-            $data  = pack('l', strlen($data)) . $tmpFile . "\0";
+            $data  = pack('l', \strlen($data)) . $tmpFile . "\0";
             $flags |= self::SW_TASK_TMPFILE;
             $len   = 128 + 24;
         } else {
-            $len = strlen($data);
+            $len = \strlen($data);
         }
 
         return pack('lSsCCS', $this->taskId++, $len, $srcWorkerId, $type, 0, $flags) . $data;
