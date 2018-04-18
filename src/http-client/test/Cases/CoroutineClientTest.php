@@ -28,21 +28,17 @@ class CoroutineClientTest extends AbstractTestCase
             $client->setAdapter('coroutine');
             $method = 'GET';
 
-            // Http
-            /** @var Response $response */
-            $response = $client->request($method, '', [
-                'base_uri' => 'http://www.swoft.org',
-                'headers' => [
-                    'Accept' => 'text/html'
-                ],
-            ])->getResponse();
-            $response->assertSuccessful()->assertSee('Swoft 官网');
+
 
             // Https
             /** @var Response $response */
             $response = $client->request($method, '', [
                 'base_uri' => 'https://www.swoft.org',
+                'headers' => [
+                    'Accept' => 'text/html'
+                ],
             ])->getResponse();
+            echo '<pre>';var_dump($response);echo '</pre>';exit();
             $response->assertSuccessful()->assertSee('Swoft 官网');
 
             /** @var Response $response */

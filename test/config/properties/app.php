@@ -25,6 +25,11 @@ return [
         'Swoft\\Tasks'                       => SRC_PATH . '/task/src',
         'Swoft\\View\\Test\\Testing'         => SRC_PATH . '/view/test/Testing',
     ],
+    'devtool'      => [
+        'enable'                  => false,
+        'logEventToConsole'       => false,
+        'logHttpRequestToConsole' => false,
+    ],
     'env'          => 'Base',
     'db'           => require __DIR__ . DS . 'db.php',
     'cache'        => require __DIR__ . DS . 'cache.php',
