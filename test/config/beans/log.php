@@ -31,6 +31,7 @@ return [
     'logger'             => [
         'class'         => \Swoft\Log\Logger::class,
         'name'          => APP_NAME,
+        'enable'        => true,
         'flushInterval' => 100,
         'flushRequest'  => true,
         'handlers'      => [
