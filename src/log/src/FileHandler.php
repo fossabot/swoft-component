@@ -4,15 +4,12 @@ namespace Swoft\Log;
 
 use Monolog\Handler\AbstractProcessingHandler;
 use Swoft\App;
+use Swoole\Async;
 
 /**
- * 日志文件输出器
+ * Class FileHandler
  *
- * @uses      FileHandler
- * @version   2017年07月05日
- * @author    stelin <phpcrazy@126.com>
- * @copyright Copyright 2010-2016 Swoft software
- * @license   PHP Version 7.x {@link http://www.php.net/license/3_0.txt}
+ * @package Swoft\Log
  */
 class FileHandler extends AbstractProcessingHandler
 {
@@ -24,14 +21,13 @@ class FileHandler extends AbstractProcessingHandler
     /**
      * @var string 输入日志文件名称
      */
-    protected $logFile = "";
+    protected $logFile = '';
 
 
     /**
      * 批量输出日志
      *
      * @param array $records 日志记录集合
-     *
      * @return bool
      */
     public function handleBatch(array $records)
@@ -70,7 +66,7 @@ class FileHandler extends AbstractProcessingHandler
     /**
      * 同步写文件
      *
-     * @param string $logFile     日志路径
+     * @param string $logFile 日志路径
      * @param string $messageText 文本信息
      */
     private function syncWrite(string $logFile, string $messageText)
@@ -88,13 +84,13 @@ class FileHandler extends AbstractProcessingHandler
     /**
      * 异步写文件
      *
-     * @param string $logFile     日志路径
+     * @param string $logFile 日志路径
      * @param string $messageText 文本信息
      */
     private function aysncWrite(string $logFile, string $messageText)
     {
         while (true) {
-            $result = \Swoole\Async::writeFile($logFile, $messageText, null, FILE_APPEND);
+            $result = Async::writeFile($logFile, $messageText, null, FILE_APPEND);
             if ($result == true) {
                 break;
             }
@@ -105,17 +101,16 @@ class FileHandler extends AbstractProcessingHandler
      * 记录过滤器
      *
      * @param array $records 日志记录集合
-     *
      * @return array
      */
     private function recordFilter(array $records)
     {
         $messages = [];
         foreach ($records as $record) {
-            if (!isset($record['level'])) {
+            if (! isset($record['level'])) {
                 continue;
             }
-            if (!$this->isHandling($record)) {
+            if (! $this->isHandling($record)) {
                 continue;
             }
 
@@ -134,7 +129,7 @@ class FileHandler extends AbstractProcessingHandler
     {
         $logFile = App::getAlias($this->logFile);
         $dir = dirname($logFile);
-        if ($dir !== null && !is_dir($dir)) {
+        if ($dir !== null && ! is_dir($dir)) {
             $status = mkdir($dir, 0777, true);
             if ($status === false) {
                 throw new \UnexpectedValueException(sprintf('There is no existing directory at "%s" and its not buildable: ', $dir));
@@ -146,7 +141,6 @@ class FileHandler extends AbstractProcessingHandler
      * check是否输出日志
      *
      * @param array $record
-     *
      * @return bool
      */
     public function isHandling(array $record)
