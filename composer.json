@@ -29,6 +29,7 @@
     },
     "replace": {
         "swoft/framework": "self.version",
+        "swoft/aop": "self.version",
         "swoft/cache": "self.version",
         "swoft/console": "self.version",
         "swoft/data-parser": "self.version",
@@ -53,6 +54,7 @@
     "autoload": {
         "psr-4": {
             "Swoft\\": "src/framework/src/",
+            "Swoft\\Aop\\": "src/aop/src/",
             "Swoft\\Cache\\": "src/cache/src/",
             "Swoft\\Console\\": "src/console/src/",
             "Swoft\\DataParser\\": "src/data-parser/src/",
