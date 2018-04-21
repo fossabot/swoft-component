@@ -1,4 +1,6 @@
 # Swoft Component
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fhuangzhhui%2Fswoft-component.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fhuangzhhui%2Fswoft-component?ref=badge_shield)
+
 
 This reposiory is used to manage all swoft components.  
 
@@ -65,3 +67,7 @@ e.g. Pull [swoft/pipeline](https://github.com/swoft-cloud/swoft-pipeline) reposi
 ```bash
 git subtree pull --prefix=src/pipeline git@github.com:swoft-cloud/swoft-pipeline master --squash
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fhuangzhhui%2Fswoft-component.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fhuangzhhui%2Fswoft-component?ref=badge_large)
